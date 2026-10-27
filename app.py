@@ -181,9 +181,11 @@ with tab_quiz:
                 with st.spinner("جاري صياغة وهندسة بنك الأسئلة بالمعايير المكتوبة..."):
                     try:
                         p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
-                        response = client.models.generate_content(
+                                              response = client.models.generate_content(
                             model='gemini-2.5-flash',
                             contents=p_text,
                             config=types.GenerateContentConfig(response_mime_type="application/json")
                         )
                         st.session_state.quiz_data = json.loads(response.text)
+                        st.session_state.user_answers = {}
+
