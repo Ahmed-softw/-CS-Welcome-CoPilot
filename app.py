@@ -23,7 +23,7 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. تم حقن رمز الـ API الجديد الخاص بك مباشرة في الكود لمنع الأخطاء الصامتة
+# 2. رمز الـ API الجديد الخاص بك محقون ومضمون
 API_KEY = "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ"
 
 @st.cache_resource
@@ -176,8 +176,14 @@ with tab_quiz:
 
         if st.button("🎲 صياغة الاختبار التفاعلي المخصص"):
             if client is None:
-                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود في السطر رقم 25.")
+                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود.")
             else:
-                with st.spinner("جاري صياغة وهندسة بنك الأسئلة المتقدم بالمعايير المكتوبة..."):
+                with st.spinner("جاري صياغة وهندسة بنك الأسئلة بالمعايير المكتوبة..."):
                     try:
-                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} ومستوى الصعوبة هو {quiz_difficulty} بناءً على المحتوى الدراسي التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً بدون تغيير أو إضافة أي نصوص خارج الجيسون:\n [{{\n\"question\": \"السؤال هنا\",\n\"options\": [\"الخيار أ أو النص المساعد هنا\", \"الخيار ب أو النص المساعد هنا\"],\n\"answer\": \"الإجابة الصحيحة المطابقة تماماً لخياراتك لغرض التصحيح الأوتوماتيكي\"\n}}]\n\nالمحتوى الدراسي المرفوع:\n{st.session_state.merged_text}"
+                        p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        response = client.models.generate_content(
+                            model='gemini-2.5-flash',
+                            contents=p_text,
+                            config=types.GenerateContentConfig(response_mime_type="application/json")
+                        )
+                        st.session_state.quiz_data = json.loads(response.text)
