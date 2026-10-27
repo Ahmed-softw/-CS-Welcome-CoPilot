@@ -24,7 +24,7 @@ st.markdown('<div class="main-title">💻 المساعد الرقمي للطلا
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
 # 2. رمز الـ API الصالح والخاص بك محقون بشكل نهائي في كود المنصة لمنع المشاكل الصامتة
-API_KEY = "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ"
+API_KEY = "AQ.Ab8RN6KuhcF1xSCEUdSXsc-NMppJiAOYY5wvf1dhecGnF8n62g"
 
 @st.cache_resource
 def init_ai_client(api_key):
