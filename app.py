@@ -23,13 +23,15 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. تهيئة الـ API المفتاح المجاني (ضع مفتاحك المستخرج من الـ AI Studio هنا)
-API_KEY = "AQ.Ab8RN6L8WKnpQ24TLS_UdaZmNQRolxr4tKyYgCzop0qZiZovWA"
+# 2. ضع مفتاح الـ API الخاص بك هنا مباشرة بين علامتي التنصيص بدلاً من النص المؤقت
+API_KEY = "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ"
 
 @st.cache_resource
 def init_ai_client(api_key):
     try:
-        return genai.Client(api_key=api_key)
+        if api_key and api_key != "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ":
+            return genai.Client(api_key=api_key)
+        return None
     except Exception as e:
         return None
 
@@ -68,7 +70,7 @@ with tab_intro_videos:
 # ==================== التبويب الثاني: مسار المهندس الناجح ====================
 with tab_roadmap:
     st.subheader("🎯 خطوات جوهرية بناءً على تجربتي الشخصية لحمايتك من الضياع المعرفي:")
-    st.write("هذه الأدوات والمنصات هي رأس مالك الحقيقي في الكلية، والبدء فيها مبكراً يختصر عليك سنوات من الحيرة:")
+    st.write("هذه الأدوات والمنصات هي رأس مالك في الكلية، والبدء فيها مبكراً يختصر عليك سنوات من الحيرة:")
     
     col_left, col_right = st.columns(2)
     
@@ -88,11 +90,13 @@ with tab_roadmap:
         <div class="roadmap-card">
             <div class="card-title">💼 2. منصة LinkedIn وبناء العلاقات المهنية</div>
             <div class="card-text">
-               بناء على خبرتي فان اول شيء تسويه انك تنشئ حساب قيت هوب لانه هو المعرض الخاص بك حيث تري ناس ابداعاتك وعملك المتواصل وكمان ترا الابات اللي يعطوك الدكاتره والشهايد من سطر كل تدريبتك تسجلها فيه
+                التخصص لا يقتصر على المذاكرة فقط، بل يحتاج بناء شبكة علاقات قوية. أنشئ حسابك الآن، 
+                أضف دكاترة القسم، الخريجين المتميزين، وتابع مهندسي البرمجيات في الشركات الكبرى 
+                لتتعرف على التوجهات الحالية والتقنيات المطلوبة في السوق السعودي قبل التخرج بوقت كافٍ.
             </div>
         </div>
         """, unsafe_allow_html=True)
-        st.checkbox("أنشأت حساب LinkedIn احترافي وربطته بتخصصي", key="chk_linkedin")
+        st.checkbox("أنشأت حساب LinkedIn احترافي ورابطته بتخصصي", key="chk_linkedin")
 
     with col_right:
         st.markdown(f"""
@@ -138,13 +142,13 @@ with tab_syllabus:
                     if text:
                         all_text += text + "\n"
             except Exception as e:
-                st.error(f"حدث خطأ أثناء قراءة ملف {uploaded_file.name}")
+                pass
         
         st.session_state.merged_text = all_text[:20000]
 
         if st.session_state.merged_text and st.button("📝 استخراج ملخص فوري شامل"):
-            if client is None or API_KEY == "ضع_مفتاح_GEMINI_الخاص_بك_هنا":
-                st.error("⚠️ الرجاء وضع مفتاح API Key صحيح لتفعيل ميزة الذكاء الاصطناعي.")
+            if client is None:
+                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود في السطر رقم 25.")
             else:
                 st.markdown("### 📌 التلخيص الأكاديمي المباشر (بث حي كلمة بكلمة):")
                 try:
@@ -152,59 +156,31 @@ with tab_syllabus:
                     response_stream = client.models.generate_content_stream(model='gemini-2.5-flash', contents=prompt)
                     st.write_stream(response_stream)
                 except Exception as e:
-                    st.error(f"فشل الاتصال بالذكاء الاصطناعي")
+                    st.error(f"حدث خطأ في الاتصال")
 
 # ==================== التبويب الرابع: pdf اختبارات تفاعلية بس ارسل ====================
 with tab_quiz:
     st.subheader("🧠 pdf اختبارات تفاعلية بس ارسل")
-    st.write("حدد طبيعة ونوع وصعوبة الأسئلة التي تريدها ليصيغها النظام لك فوراً من الملفات المرفوعة.")
+    st.write("اكتب نوع الأسئلة بدقة وحدد صعوبتها وعددها (حتى 100 سؤال) ليقوم النظام بصياغتها تفاعلياً.")
 
     if not st.session_state.merged_text:
         st.warning("⚠️ يرجى رفع ملفات الـ PDF من التبويب السابق أولاً لتتمكن من تخصيص وصناعة الاختبار التفاعلي.")
     else:
         col_type, col_diff, col_num = st.columns(3)
         with col_type:
-            quiz_type = st.selectbox("نوع الأسئلة المطلوبة:", ["خيارات متعددة (MCQ)", "صح وخطأ (True/False)"])
+            quiz_type = st.text_input("اكتب نوع الأسئلة المطلوب بيدك:", value="خيارات متعددة تفصيلية")
         with col_diff:
             quiz_difficulty = st.selectbox("مستوى الصعوبة المتوقع:", ["سهل (Easy)", "متوسط (Medium)", "صعب (Hard)"])
         with col_num:
-            quiz_count = st.slider("عدد الأسئلة:", min_value=2, max_value=8, value=3)
+            quiz_count = st.slider("عدد الأسئلة المطلوبة:", min_value=1, max_value=100, value=5)
 
         if st.button("🎲 صياغة الاختبار التفاعلي المخصص"):
-            if client is None or API_KEY == "ضع_مفتاح_GEMINI_الخاص_بك_هنا":
-                st.error("⚠️ الرجاء وضع مفتاح API Key صحيح لتفعيل ميزة الذكاء الاصطناعي.")
+            if client is None:
+                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود في السطر رقم 25.")
             else:
-                with st.spinner("جاري صياغة وهندسة بنك الأسئلة بالمعايير المطلوبة..."):
+                with st.spinner("جاري صياغة وهندسة بنك الأسئلة المتقدم بالمعايير المكتوبة..."):
                     try:
-                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} ومستوى الصعوبة هو {quiz_difficulty} بناءً على المحتوى الدراسي التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال هنا\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة المطابقة تماماً لخياراتك\"\n}}]\n\nملاحظة: إذا كان الاختيار صح وخطأ، ضع في مصفوفة options خيارين فقط هما ['صح', 'خطأ'].\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} ومستوى الصعوبة هو {quiz_difficulty} بناءً على المحتوى الدراسي التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً بدون تغيير أو إضافة أي نصوص خارج الجيسون:\n [{{\n\"question\": \"السؤال هنا\",\n\"options\": [\"الخيار أ أو النص المساعد هنا\", \"الخيار ب أو النص المساعد هنا\"],\n\"answer\": \"الإجابة الصحيحة المطابقة تماماً لخياراتك لغرض التصحيح الأوتوماتيكي\"\n}}]\n\nالمحتوى الدراسي المرفوع:\n{st.session_state.merged_text}"
                         response = client.models.generate_content(
                             model='gemini-2.5-flash',
                             contents=prompt,
-                            config=types.GenerateContentConfig(response_mime_type="application/json")
-                        )
-                        st.session_state.quiz_data = json.loads(response.text)
-                        st.session_state.user_answers = {}
-                    except Exception as e:
-                        st.error(f"حدث خطأ في صياغة الأسئلة، يرجى إعادة الضغط على الزر.")
-
-        if st.session_state.quiz_data:
-            st.markdown("### 📝 الاختبار المخصص الجاهز:")
-            with st.form("quiz_form"):
-                for idx, q in enumerate(st.session_state.quiz_data):
-                    st.markdown(f"**س{idx+1}: {q['question']}**")
-                    st.session_state.user_answers[idx] = st.radio("اختر الإجابة:", q['options'], key=f"q_{idx}")
-                    st.write("---")
-                
-                submit_quiz = st.form_submit_button("📥 إرسال الإجابات للتصحيح التلقائي")
-                if submit_quiz:
-                    correct_count = 0
-                    st.markdown("### 📊 تقرير الأداء المباشر للاختبار:")
-                    for idx, q in enumerate(st.session_state.quiz_data):
-                        user_ans = st.session_state.user_answers[idx]
-                        actual_ans = q['answer']
-                        if user_ans == actual_ans:
-                            st.success(f"✅ سؤال {idx+1}: إجابة صحيحة ومثالية!")
-                            correct_count += 1
-                        else:
-                            st.error(f"❌ سؤال {idx+1}: إجابة خاطئة. الإجابة الصحيحة هي: ({actual_ans})")
-                    st.metric(label="مجموع درجاتك في الاختبار", value=f"{correct_count} / {len(st.session_state.quiz_data)}")
