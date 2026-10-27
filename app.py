@@ -23,7 +23,7 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. رمز الـ API الجديد الخاص بك محقون ومضمون
+# 2. رمز الـ API الصالح والخاص بك محقون بشكل نهائي في كود المنصة لمنع المشاكل الصامتة
 API_KEY = "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ"
 
 @st.cache_resource
@@ -54,14 +54,11 @@ tab_intro_videos, tab_roadmap, tab_syllabus, tab_quiz = st.tabs([
 with tab_intro_videos:
     st.subheader("🎥 الفيديوهات التوجيهية والشرح")
     st.write("شاهد الفيديوهات التالية للتعرف على المنصة وكيفية البدء في التخصص بشكل مثالي:")
-    
     col_vid1, col_vid2 = st.columns(2)
-    
     with col_vid1:
         st.markdown('<div class="video-header">👋 1. فيديو المقدمة والتعريف بالفكرة</div>', unsafe_allow_html=True)
         st.write("في هذا الفيديو أُعرفك بنفسي كطالب هندسة برمجيات، وأشرح لك كيف جاءتني فكرة المشروع بناءً على الصعوبات والضياع الذي واجهته في سنتي الأولى.")
         st.video("https://youtube.com") 
-        
     with col_vid2:
         st.markdown('<div class="video-header">🛠️ 2. كيف تسجل دخول علي منصة سطر التعليمية</div>', unsafe_allow_html=True)
         st.write("كيف تنزل الملف في الموقع وكيف تدخل دوراة سطر ")
@@ -71,9 +68,7 @@ with tab_intro_videos:
 with tab_roadmap:
     st.subheader("🎯 خطوات جوهرية بناءً على تجربتي الشخصية لحمايتك من الضياع المعرفي:")
     st.write("هذه الأدوات والمنصات هي رأس مالك في الكلية، والبدء فيها مبكراً يختصر عليك سنوات من الحيرة:")
-    
     col_left, col_right = st.columns(2)
-    
     with col_left:
         st.markdown(f"""
         <div class="roadmap-card">
@@ -85,7 +80,6 @@ with tab_roadmap:
         </div>
         """, unsafe_allow_html=True)
         st.checkbox("أنشأت حساب في GitHub وربطته بـ Git بنجاح", key="chk_github")
-        
         st.markdown(f"""
         <div class="roadmap-card">
             <div class="card-title">💼 2. منصة LinkedIn وبناء العلاقات المهنية</div>
@@ -97,7 +91,6 @@ with tab_roadmap:
         </div>
         """, unsafe_allow_html=True)
         st.checkbox("أنشأت حساب LinkedIn احترافي ورابطته بتخصصي", key="chk_linkedin")
-
     with col_right:
         st.markdown(f"""
         <div class="satr-card">
@@ -111,7 +104,6 @@ with tab_roadmap:
         </div>
         """, unsafe_allow_html=True)
         st.checkbox("سجلت في منصة سطر وبدأت أول مسار برمي تطبيقي", key="chk_satr")
-
         st.markdown(f"""
         <div class="roadmap-card">
             <div class="card-title">📝 4. التوثيق الرقمي المستمر (Dev Journal)</div>
@@ -128,9 +120,7 @@ with tab_roadmap:
 with tab_syllabus:
     st.subheader("📚 pdf ارفع ملفك وخلني اللخصه لك")
     st.write("يمكنك رفع ملف أو عدة ملفات (تتحمل أكثر من 15 ملف دفعة واحدة) ليقوم النظام بدمجها وتلخيصها فوراً بلمح البصر.")
-    
     uploaded_files = st.file_uploader("ارفع ملفات الـ PDF الخاصة بالمواد الدراسية هنا", type=["pdf"], accept_multiple_files=True)
-
     if uploaded_files:
         st.success(f"🔒 تم رفع {len(uploaded_files)} ملفات بنجاح وجاري دمج النصوص وإعداد محرك البث الفوري!")
         all_text = ""
@@ -143,12 +133,10 @@ with tab_syllabus:
                         all_text += text + "\n"
             except Exception as e:
                 pass
-        
         st.session_state.merged_text = all_text[:20000]
-
         if st.session_state.merged_text and st.button("📝 استخراج ملخص فوري شامل"):
             if client is None:
-                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود في السطر رقم 25.")
+                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم.")
             else:
                 st.markdown("### 📌 التلخيص الأكاديمي المباشر (بث حي كلمة بكلمة):")
                 try:
@@ -162,7 +150,6 @@ with tab_syllabus:
 with tab_quiz:
     st.subheader("🧠 pdf اختبارات تفاعلية بس ارسل")
     st.write("اكتب نوع الأسئلة بدقة وحدد صعوبتها وعددها (حتى 100 سؤال) ليقوم النظام بصياغتها تفاعلياً.")
-
     if not st.session_state.merged_text:
         st.warning("⚠️ يرجى رفع ملفات الـ PDF من التبويب السابق أولاً لتتمكن من تخصيص وصناعة الاختبار التفاعلي.")
     else:
@@ -173,19 +160,15 @@ with tab_quiz:
             quiz_difficulty = st.selectbox("مستوى الصعوبة المتوقع:", ["سهل (Easy)", "متوسط (Medium)", "صعب (Hard)"])
         with col_num:
             quiz_count = st.slider("عدد الأسئلة المطلوبة:", min_value=1, max_value=100, value=5)
-
         if st.button("🎲 صياغة الاختبار التفاعلي المخصص"):
             if client is None:
-                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم داخل الكود.")
+                st.error("⚠️ لم يتم العثور على مفتاح API Key سليم.")
             else:
                 with st.spinner("جاري صياغة وهندسة بنك الأسئلة بالمعايير المكتوبة..."):
                     try:
-                                             p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
-                        response = client.models.generate_content(
-                            model='gemini-2.5-flash',
-                            contents=p_text,
-                            config=types.GenerateContentConfig(response_mime_type="application/json")
-                        )
+                        p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        response = client.models.generate_content(model='gemini-2.5-flash', contents=p_text, config=types.GenerateContentConfig(response_mime_type="application/json"))
                         st.session_state.quiz_data = json.loads(response.text)
                         st.session_state.user_answers = {}
-
+                    except Exception as e:
+                        st.error(f"حدث خطأ، يرجى إعادة الضغط على زر الصياغة مرة أخرى.")
