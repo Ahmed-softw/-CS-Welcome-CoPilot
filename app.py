@@ -23,13 +23,13 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. ضع مفتاح الـ API الخاص بك هنا مباشرة بين علامتي التنصيص بدلاً من النص المؤقت
+# 2. تم حقن رمز الـ API الجديد الخاص بك مباشرة في الكود لمنع الأخطاء الصامتة
 API_KEY = "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ"
 
 @st.cache_resource
 def init_ai_client(api_key):
     try:
-        if api_key and api_key != "AQ.Ab8RN6KQ-6opXfamf01lQR5rh78tm2NVcGB3xR558KrmNzXLxQ":
+        if api_key:
             return genai.Client(api_key=api_key)
         return None
     except Exception as e:
@@ -181,6 +181,3 @@ with tab_quiz:
                 with st.spinner("جاري صياغة وهندسة بنك الأسئلة المتقدم بالمعايير المكتوبة..."):
                     try:
                         prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} ومستوى الصعوبة هو {quiz_difficulty} بناءً على المحتوى الدراسي التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً بدون تغيير أو إضافة أي نصوص خارج الجيسون:\n [{{\n\"question\": \"السؤال هنا\",\n\"options\": [\"الخيار أ أو النص المساعد هنا\", \"الخيار ب أو النص المساعد هنا\"],\n\"answer\": \"الإجابة الصحيحة المطابقة تماماً لخياراتك لغرض التصحيح الأوتوماتيكي\"\n}}]\n\nالمحتوى الدراسي المرفوع:\n{st.session_state.merged_text}"
-                        response = client.models.generate_content(
-                            model='gemini-2.5-flash',
-                            contents=prompt,
