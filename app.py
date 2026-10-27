@@ -23,7 +23,7 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. رمز الـ API الصالح والخاص بك محقون بشكل نهائي في كود المنصة لمنع المشاكل الصامتة
+# 2. تم حقن رمز الـ API الجديد الفعال الخاص بك مباشرة في الكود ليعمل بلمح البصر
 API_KEY = "AQ.Ab8RN6LWX3rmt83vk8dWuAoHrJqKTcRhr8pMZw0_dBY6UIPo9A"
 
 @st.cache_resource
@@ -57,7 +57,7 @@ with tab_intro_videos:
     col_vid1, col_vid2 = st.columns(2)
     with col_vid1:
         st.markdown('<div class="video-header">👋 1. فيديو المقدمة والتعريف بالفكرة</div>', unsafe_allow_html=True)
-        st.write("في هذا الفيديو أُعرفك بنفسي كطالب هندسة برمجيات، وأشرح لك كيف جاءتني فكرة المشروع بناءً على الصعوبات والضياع الذي واجهته في سنتي الأولى.")
+        st.write("في هذا الفيديو أُعرفك بنفسي كطالب هندسة برمجيات، وأشرح لك كيف جاءتني فكرة المشروع بناءً على الصعوبات والضياع الذي واجهته in سنتي الأولى.")
         st.video("https://youtube.com") 
     with col_vid2:
         st.markdown('<div class="video-header">🛠️ 2. كيف تسجل دخول علي منصة سطر التعليمية</div>', unsafe_allow_html=True)
@@ -166,7 +166,7 @@ with tab_quiz:
             else:
                 with st.spinner("جاري صياغة وهندسة بنك الأسئلة بالمعايير المكتوبة..."):
                     try:
-                        p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        p_text = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة, وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
                         response = client.models.generate_content(model='gemini-2.5-flash', contents=p_text, config=types.GenerateContentConfig(response_mime_type="application/json"))
                         st.session_state.quiz_data = json.loads(response.text)
                         st.session_state.user_answers = {}
