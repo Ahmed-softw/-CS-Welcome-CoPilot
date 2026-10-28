@@ -25,7 +25,7 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 Jeffrey المساعد الذكي</div>', unsafe_allow_html=True)    
 st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد ومرشد جامعي لأقسام الحاسب وبناء القدرات التقنية</div>', unsafe_allow_html=True)
 
-# 2. إعدادات مفاتيح ربط سيرفر الـ AI لـ Groq
+# 2. إعدادات مفاتيح ربط سيرفر الـ AI لـ Groq (تم وضع مفتاحك الجديد هنا)
 GROQ_API_KEY = "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"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
@@ -162,64 +162,4 @@ with tab3:
                 except Exception as e:
                     pass
             st.session_state.all_extracted_text = combined_text[:40000]
-            st.info("✅ تم تجهيز نصوص الملفات بنجاح وجاهزة للتنفيذ والاستعلام.")
-
-    st.write("---")
-
-    st.subheader("🤖 2. صندوق أوامر واستفسارات المساعد جفري")
-
-    user_command = st.text_area(
-        "اكتب أمرك المركب الموجه للمساعد هنا (ابدأ بكلمة جفري):", 
-        placeholder="مثال: جفري لخص لي هذه المحاضرة واصنع منها 10 أسئلة خيارات متعددة و 5 أسئلة مقالية...",
-        height=100
-    )
-
-    if st.button("🚀 إرسال الأمر المباشر إلى جفري"):
-        clean_command = user_command.strip()
-        
-        if not st.session_state.all_extracted_text:
-            st.warning("⚠️ يرجى رفع ملفات PDF أولاً ليتمكن جفري من قراءتها وتحليلها.")
-        elif not clean_command:
-            st.warning("⚠️ صندوق الأوامر فارغ، يرجى كتابة التوجيه المطلوب أولاً.")
-        elif not clean_command.startswith("جفري"):
-            st.error("⛔ جفري يرفض الاستجابة! التنبيه الصارم ينص على ضرورة مناداته بـ 'جفري' أول جملة الأمر المباشر.")
-        else:
-            with st.spinner("جاري التواصل مع الخادم وتحليل المواد الدراسية... برجاء الانتظار"):
-                try:
-                    headers = {
-                        "Authorization": f"Bearer {GROQ_API_KEY.strip()}",
-                        "Content-Type": "application/json"
-                    }
-                    
-                    system_instruction = (
-                        "أنت مساعد أكاديمي ذكي جداً وخبير ومتخصص في علوم الحاسب وهندسة البرمجيات، واسمك الشخصي هو 'جفري'.\n"
-                        "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بمرونة فائقة بناءً على نصوص الـ PDF المرفقة مع الالتزام التام بالقواعد التالية:\n"
-                        "1. يمكنك دمج عدة طلبات معاً (ملخص، شرح جزئية، صياغة أسئلة متنوعة) في رد واحد منسق أكاديمياً بعناوين واضحة.\n"
-                        "2. إذا تضمن طلب الطالب توليد أسئلة (خيارات، صح وخطأ، أو مقالي)، فيجب وبشكل صارم ألا يتجاوز إجمالي عدد الأسئلة المصنوعة 60 سؤالاً كحد أقصى مهما كانت صيغة الطلب.\n"
-                        "3. لغة الرد يجب أن تكون العربية الفصحى الواضحة والمنظمة للمذاكرة مباشرة."
-                    )
-                    
-                    payload = {
-                        "model": "llama3-8b-8192",
-                        "messages": [
-                            {"role": "system", "content": system_instruction},
-                            {"role": "user", "content": f"محتوى الملفات الدراسية:\n{st.session_state.all_extracted_text}\n\nطلب الطالب:\n{clean_command}"}
-                        ],
-                        "temperature": 0.5,
-                        "max_tokens": 2048
-                    }
-                    
-                    response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
-                    
-                    if response.status_code == 200:
-                        res_json = response.json()
-                        answer = res_json["choices"][0]["message"]["content"]
-                        st.session_state.jef_response = answer
-                    else:
-                        st.error(f"⚠️ حدث خطأ في الاتصال بخادم الذكاء الاصطناعي (رمز الاستجابة: {response.status_code}): {response.text}")
-                except Exception as e:
-                    st.error(f"⚠️ حدث خطأ غير متوقع: {e}")
-
-    if st.session_state.jef_response:
-        st.markdown("### 💬 إجابة وتوجيهات جفري:")
-        st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
+            st.info("✅ تم تجهيز نصوص الملفات بنجاح وجاهزة للتنفيذ والاست
