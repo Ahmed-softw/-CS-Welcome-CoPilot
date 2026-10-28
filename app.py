@@ -24,6 +24,7 @@ st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتم�
 
 # 2. ضع مفتاحك المجاني المستخرج من موقع Groq هنا بدلاً من النص المؤقت
 GROQ_API_KEY = "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"
+
 if "quiz_data" not in st.session_state:
     st.session_state.quiz_data = None
 if "merged_text" not in st.session_state:
@@ -88,14 +89,12 @@ with tab_syllabus:
                 with st.spinner("جاري التلخيص الفوري الشامل عبر خوادم Groq الخارقة..."):
                     try:
                         url = "https://groq.com"
-                        # التعديل الحاسم: محاذاة مرنة وتلقائية لقنوات الـ Authorization
                         headers = {"Authorization": f"Bearer {GROQ_API_KEY.strip()}", "Content-Type": "application/json"}
                         payload = {
                             "model": "llama3-8b-8192",
                             "messages": [{"role": "user", "content": f"قم بتلخيص المحتوى التالي تلخيصاً أكاديمياً احترافياً شاملاً على شكل نقاط وعناوين رئيسية باللغة العربية واضحة ومباشرة:\n\n{st.session_state.merged_text}"}]
                         }
                         res = requests.post(url, json=payload, headers=headers)
-                        # معالجة ارتدادية إذا رفض السيرفر المغلف الأول بالـ Token
                         if res.status_code != 200:
                             headers = {"api-key": GROQ_API_KEY.strip(), "Content-Type": "application/json"}
                             res = requests.post(url, json=payload, headers=headers)
@@ -146,3 +145,7 @@ with tab_quiz:
                                 st.session_state.quiz_data = parsed_data
                             else:
                                 st.session_state.quiz_data = list(parsed_data.values())
+                        st.session_state.user_answers = {}
+                    except:
+                        st.error("حدث خطأ في معالجة بنك الأسئلة، يرجى إعادة الضغط على زر الصياغة.")
+
