@@ -22,9 +22,8 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 المساعد الرقمي للطلاب الجدد في تخصصات الحاسب</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
-# 2. ضع مفتاحك الجديد المبتدئ بـ gsk_ هنا مباشرة بيدك بين علامتي التنصيص
+# 2. ضع مفتاحك المجاني المستخرج من موقع Groq هنا بدلاً من النص المؤقت
 GROQ_API_KEY = "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"
-
 if "quiz_data" not in st.session_state:
     st.session_state.quiz_data = None
 if "merged_text" not in st.session_state:
@@ -89,14 +88,21 @@ with tab_syllabus:
                 with st.spinner("جاري التلخيص الفوري الشامل عبر خوادم Groq الخارقة..."):
                     try:
                         url = "https://groq.com"
-                        headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+                        # التعديل الحاسم: محاذاة مرنة وتلقائية لقنوات الـ Authorization
+                        headers = {"Authorization": f"Bearer {GROQ_API_KEY.strip()}", "Content-Type": "application/json"}
                         payload = {
-                            "model": "llama-3.1-8b-instant",
+                            "model": "llama3-8b-8192",
                             "messages": [{"role": "user", "content": f"قم بتلخيص المحتوى التالي تلخيصاً أكاديمياً احترافياً شاملاً على شكل نقاط وعناوين رئيسية باللغة العربية واضحة ومباشرة:\n\n{st.session_state.merged_text}"}]
                         }
                         res = requests.post(url, json=payload, headers=headers)
+                        # معالجة ارتدادية إذا رفض السيرفر المغلف الأول بالـ Token
+                        if res.status_code != 200:
+                            headers = {"api-key": GROQ_API_KEY.strip(), "Content-Type": "application/json"}
+                            res = requests.post(url, json=payload, headers=headers)
+                        
+                        result_json = res.json()
                         st.markdown("### 📌 التلخيص الأكاديمي الشامل:")
-                        st.info(res.json()['choices']['message']['content'])
+                        st.info(result_json['choices']['message']['content'])
                     except:
                         st.error("حدث خطأ في الاتصال بسيرفر الذكاء الاصطناعي، يرجى المحاولة مجدداً.")
 
@@ -118,32 +124,25 @@ with tab_quiz:
                 with st.spinner("جاري صياغة بنك الأسئلة بالمعايير المطلوبة..."):
                     try:
                         url = "https://groq.com"
-                        headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
-                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة نظيفة تماماً بدون أي نصوص خارج الأقواس، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        headers = {"Authorization": f"Bearer {GROQ_API_KEY.strip()}", "Content-Type": "application/json"}
+                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON ككائن يحتوي على مصفوفة اسمها 'questions' وتتبع الهيكل التالي تماماً:\n {{\n\"questions\": [\n{{\"question\": \"السؤال\", \"options\": [\"أ\", \"ب\", \"ج\", \"د\"], \"answer\": \"الإجابة الصحيحة\"}}\n]\n}}\n\nالمحتوى:\n{st.session_state.merged_text}"
                         payload = {
-                            "model": "llama-3.1-8b-instant",
-                            "messages": [{"role": "user", "content": prompt}]
+                            "model": "llama3-8b-8192",
+                            "messages": [{"role": "user", "content": prompt}],
+                            "response_format": {"type": "json_object"}
                         }
                         res = requests.post(url, json=payload, headers=headers)
-                        data = json.loads(res.text)
-                        if "questions" in data: st.session_state.quiz_data = data["questions"]
-                        elif isinstance(data, list): st.session_state.quiz_data = data
-                        else: st.session_state.quiz_data = list(data.values())
-                        st.session_state.user_answers = {}
-                    except:
-                        st.error("حدث خطأ في معالجة بنك الأسئلة، يرجى إعادة الضغط على زر الصياغة.")
-
-        if st.session_state.quiz_data:
-            st.markdown("### 📝 بنك الاختبار المخصص الجاهز:")
-            with st.form("quiz_form"):
-                for idx, q in enumerate(st.session_state.quiz_data):
-                    if isinstance(q, dict) and "question" in q and "options" in q:
-                        st.markdown(f"**س{idx+1}: {q['question']}**")
-                        st.session_state.user_answers[idx] = st.radio("اختر الإجابة:", q['options'], key=f"q_{idx}")
-                        st.write("---")
-                if st.form_submit_button("📥 إرسال الإجابات للتصحيح التلقائي"):
-                    correct_count = 0
-                    st.markdown("### 📊 تقرير الأداء المباشر:")
-                    for idx, q in enumerate(st.session_state.quiz_data):
-                        if isinstance(q, dict) and "answer" in q:
-                            user_ans = st.session_state.user_answers.get(idx)
+                        if res.status_code != 200:
+                            headers = {"api-key": GROQ_API_KEY.strip(), "Content-Type": "application/json"}
+                            res = requests.post(url, json=payload, headers=headers)
+                            
+                        data = res.json()
+                        if "choices" in data:
+                            content_text = data['choices']['message']['content']
+                            parsed_data = json.loads(content_text)
+                            if "questions" in parsed_data:
+                                st.session_state.quiz_data = parsed_data["questions"]
+                            elif isinstance(parsed_data, list):
+                                st.session_state.quiz_data = parsed_data
+                            else:
+                                st.session_state.quiz_data = list(parsed_data.values())
