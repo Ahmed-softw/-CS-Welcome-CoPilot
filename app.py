@@ -122,8 +122,7 @@ with tab_quiz:
                         prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON فقط كقائمة مصفوفة نظيفة تماماً بدون أي نصوص خارج الأقواس، وتتبع الهيكل التالي تماماً:\n [{{\n\"question\": \"السؤال\",\n\"options\": [\"أ\", \"ب\", \"ج\", \"د\"],\n\"answer\": \"الإجابة الصحيحة\"\n}}]\n\nالمحتوى:\n{st.session_state.merged_text}"
                         payload = {
                             "model": "llama-3.1-8b-instant",
-                            "messages": [{"role": "user", "content": prompt}],
-                            "response_format": {"type": "json_object"}
+                            "messages": [{"role": "user", "content": prompt}]
                         }
                         res = requests.post(url, json=payload, headers=headers)
                         data = json.loads(res.text)
@@ -147,3 +146,4 @@ with tab_quiz:
                     st.markdown("### 📊 تقرير الأداء المباشر:")
                     for idx, q in enumerate(st.session_state.quiz_data):
                         if isinstance(q, dict) and "answer" in q:
+                            user_ans = st.session_state.user_answers.get(idx)
