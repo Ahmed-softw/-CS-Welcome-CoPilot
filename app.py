@@ -25,24 +25,20 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 Jeffrey المساعد الذكي</div>', unsafe_allow_html=True)    
 st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد ومرشد جامعي لأقسام الحاسب وبناء القدرات التقنية</div>', unsafe_allow_html=True)
 
-# 2. إعدادات مفاتيح ربط سيرفر الـ AI لـ Groq
-GROQ_API_KEY = "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"
-GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
+# وضع مفتاح Google Gemini الذي أرسلته هنا
+GEMINI_API_KEY = "AQ.Ab8RN6JIBvFYf7_fkPPRn0epodE844jqFVWvNn5TWbrlgX_Cww"
 
-# تهيئة متغيرات الذاكرة التخزينية داخل الجلسة (Session State)
 if "all_extracted_text" not in st.session_state:
     st.session_state.all_extracted_text = ""
 if "jef_response" not in st.session_state:
     st.session_state.jef_response = ""
 
-# تقسيم التطبيق إلى 3 أقسام رئيسية (تبويبات)
 tab1, tab2, tab3 = st.tabs([
     "🎥 القسم الأول: الفيديوهات التعليمية", 
     "🚀 القسم الثاني: خارطة الطريق التقنية", 
     "🤖 القسم الثالث: المساعد الذكي جفري"
 ])
 
-# ==================== القسم الأول: الفيديوهات التعليمية ====================
 with tab1:
     st.subheader("🎥 الفيديوهات التوجيهية والشرح المدمج")
     col_vid1, col_vid2 = st.columns(2)
@@ -71,7 +67,6 @@ with tab1:
             st.warning(f"⚠️ تأكد من رفع الفيديو الثاني باسمه المطابق: '{video_path_2}' على GitHub")
         st.markdown('</div>', unsafe_allow_html=True)
 
-# ==================== القسم الثاني: خارطة الطريق ====================
 with tab2:
     st.subheader("🚀 خارطة طريق طالب هندسة البرمجيات وعلوم الحاسب")
     col_left, col_right = st.columns(2)
@@ -81,8 +76,7 @@ with tab2:
             <div class="roadmap-card">
                 <div class="card-title">🐙 1. منصة GitHub وبناء المعرض</div>
                 <div class="card-text">
-                    GitHub هي منصة استضافة لمشاريع البرمجيات، حيث يمكن للمهندسين مشاركة مشاريعهم وبناء معرض أعمالهم. 
-                    للبدء، قم بإنشاء حساب على GitHub وابدأ برفع مشاريعك البرمجية.
+                    GitHub هي منصة استضافة لمشاريع البرمجيات.
                     <br><br>
                     🔗 <b>رابط الموقع الرسمي:</b> <a class="link-style" href="https://github.com" target="_blank">اضغط هنا للانتقال إلى GitHub</a>
                 </div>
@@ -94,7 +88,7 @@ with tab2:
             <div class="roadmap-card">
                 <div class="card-title">💼 2. منصة LinkedIn وبناء العلاقات</div>
                 <div class="card-text">
-                    التخصص لا يقتصر على المذاكرة فقط، بل يحتاج بناء شبكة علاقات قوية وتتبع التقنيات والوظائف المطلوبة بالسوق المهني.
+                    التخصص لا يقتصر على المذاكرة فقط، بل يحتاج بناء شبكة علاقات قوية.
                     <br><br>
                     🔗 <b>رابط الموقع الرسمي:</b> <a class="link-style" href="https://linkedin.com" target="_blank">اضغط هنا للانتقال إلى LinkedIn</a>
                 </div>
@@ -107,19 +101,19 @@ with tab2:
             <div class="satr-card">
                 <div class="card-title">🚀 3. منصة سطر التعليمية (Satr.codes)</div>
                 <div class="card-text">
-                    منصة سطر هي الخيار المثالي والمجاني بالكامل باللغة العربية. أنصحك بالبدء فوراً في مسارات لغة Python ومسارات الـ Full-Stack لدعم دراستك الجامعية.
+                    منصة سطر هي الخيار المثالي والمجاني بالكامل باللغة العربية.
                     <br><br>
                     🔗 <b>رابط الموقع الرسمي:</b> <a class="link-style-satr" href="https://satr.codes" target="_blank">اضغط هنا للانتقال إلى منصة سطر</a>
                 </div>
             </div>
         """, unsafe_allow_html=True)
-        st.checkbox("سجلت في منصة سطر وبدأت أول مسار برمي تطبيقي", key="chk_satr")
+        st.checkbox("سجلت في منصة سطر وبدأت أول مسار برمجي", key="chk_satr")
         
         st.markdown("""
             <div class="roadmap-card">
                 <div class="card-title">📝 4. التوثيق الرقمي المستمر (Dev Journal)</div>
                 <div class="card-text">
-                    وثق واكتب وسجل كل لغة برمجة، أداة، أو خوارزمية تفهمها في مفكرة رقمية مثل Notion لكي لا تنسى عند التقديم على التدريب التعاوني (COOP).
+                    وثق واكتب وسجل كل لغة برمجة في مفكرة رقمية مثل Notion.
                     <br><br>
                     🔗 <b>رابط الأداة المقترحة:</b> <a class="link-style" href="https://notion.so" target="_blank">اضغط هنا للانتقال إلى Notion</a>
                 </div>
@@ -127,11 +121,10 @@ with tab2:
         """, unsafe_allow_html=True)
         st.checkbox("أنشأت مفكرتي الرقمية الخاصة لتوثيق كل مهارة أتعلمها", key="chk_journal")
 
-# ==================== القسم الثالث: المساعد الذكي والملفات ====================
 with tab3:
     st.markdown("""
     <div class="info-box">
-        🤖 <b>مرحباً بك! أنا جفري مساعدك الذكي:</b> لمساعدتك، يرجى رفع ملفات الـ PDF الدراسية (بحد أقصى 15 ملفاً), 
+        🤖 <b>مرحباً بك! أنا جفري مساعدك الذكي:</b> لمساعدتك، يرجى رفع ملفات الـ PDF الدراسية, 
         ثم وجه لي الأمر في الصندوق السفلي. <br><b>تنبيه صارم:</b> أنا لا أستجيب للأوامر إلا إذا بدأت بـ مناداتي باسمي أولاً! 
         <br><i>مثال صحيح: "جفري لخص لي هذه المحاضرة واصنع منها أسئلة صح وخطأ"</i>
     </div>
@@ -170,7 +163,7 @@ with tab3:
 
     user_command = st.text_area(
         "اكتب أمرك المركب الموجه للمساعد هنا (ابدأ بكلمة جفري):", 
-        placeholder="مثال: جفري لخص لي هذه المحاضرة واصنع منها 10 أسئلة خيارات متعددة و 5 أسئلة مقالية...",
+        placeholder="مثال: جفري لخص لي هذه المحاضرة واصنع منها 10 أسئلة خيارات متعددة...",
         height=100
     )
 
@@ -186,40 +179,27 @@ with tab3:
         else:
             with st.spinner("جاري التواصل مع الخادم وتحليل المواد الدراسية... برجاء الانتظار"):
                 try:
-                    headers = {
-                        "Authorization": f"Bearer {GROQ_API_KEY.strip()}",
-                        "Content-Type": "application/json"
-                    }
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY.strip()}"
+                    headers = {"Content-Type": "application/json"}
                     
-                    system_instruction = (
+                    system_prompt = (
                         "أنت مساعد أكاديمي ذكي جداً وخبير ومتخصص في علوم الحاسب وهندسة البرمجيات، واسمك الشخصي هو 'جفري'.\n"
-                        "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بمرونة فائقة بناءً على نصوص الـ PDF المرفقة مع الالتزام التام بالقواعد التالية:\n"
-                        "1. يمكنك دمج عدة طلبات معاً (ملخص، شرح جزئية، صياغة أسئلة متنوعة) في رد واحد منسق أكاديمياً بعناوين واضحة.\n"
-                        "2. إذا تضمن طلب الطالب توليد أسئلة (خيارات، صح وخطأ، أو مقالي)، فيجب وبشكل صارم ألا يتجاوز إجمالي عدد الأسئلة المصنوعة 60 سؤالاً كحد أقصى مهما كانت صيغة الطلب.\n"
-                        "3. لغة الرد يجب أن تكون العربية الفصحى الواضحة والمنظمة للمذاكرة مباشرة."
+                        "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بناءً على نصوص الـ PDF المرفقة.\n"
                     )
                     
+                    full_prompt = f"{system_prompt}\nمحتوى الملفات الدراسية:\n{st.session_state.all_extracted_text}\n\nطلب الطالب:\n{clean_command}"
+                    
                     payload = {
-                        "model": "llama-3.1-8b-instant",
-                        "messages": [
-                            {"role": "system", "content": system_instruction},
-                            {"role": "user", "content": f"محتوى الملفات الدراسية:\n{st.session_state.all_extracted_text}\n\nطلب الطالب:\n{clean_command}"}
-                        ],
-                        "temperature": 0.5,
-                        "max_tokens": 2048
+                        "contents": [{
+                            "parts": [{"text": full_prompt}]
+                        }]
                     }
                     
-                    response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+                    response = requests.post(url, headers=headers, json=payload)
                     
                     if response.status_code == 200:
                         res_json = response.json()
-                        answer = res_json["choices"][0]["message"]["content"]
+                        answer = res_json["candidates"][0]["content"]["parts"][0]["text"]
                         st.session_state.jef_response = answer
                     else:
-                        st.error(f"⚠️ حدث خطأ في الاتصال بخادم الذكاء الاصطناعي (رمز الاستجابة: {response.status_code}): {response.text}")
-                except Exception as e:
-                    st.error(f"⚠️ حدث خطأ غير متوقع: {e}")
-
-    if st.session_state.jef_response:
-        st.markdown("### 💬 إجابة وتوجيهات جفري:")
-        st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
+                        st.error(
