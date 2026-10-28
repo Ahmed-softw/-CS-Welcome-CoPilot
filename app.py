@@ -196,4 +196,26 @@ with tab3:
                         "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بناءً على نصوص الـ PDF المرفقة.\n"
                     )
                     
-                    full_prompt = f"محتوى الملفات الدرا
+                    # تم إصلاح طريقة الدمج لتفادي أي أخطاء في نصوص الأسطر
+                    full_prompt = "محتوى الملفات الدراسية:\n" + st.session_state.all_extracted_text + "\n\nطلب الطالب:\n" + clean_command
+                    
+                    payload = {
+                        "model": "command-r-plus",
+                        "message": full_prompt,
+                        "preamble": system_prompt
+                    }
+                    
+                    response = requests.post(url, headers=headers, json=payload)
+                    
+                    if response.status_code == 200:
+                        res_json = response.json()
+                        answer = res_json["text"]
+                        st.session_state.jef_response = answer
+                    else:
+                        st.error(f"⚠️ حدث خطأ في الاتصال (رمز الاستجابة: {response.status_code}): {response.text}")
+                except Exception as e:
+                    st.error("⚠️ حدث خطأ غير متوقع أثناء المعالجة.")
+
+    if st.session_state.jef_response:
+        st.markdown("### 💬 إجابة وتوجيهات جفري:")
+        st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
