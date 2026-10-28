@@ -195,3 +195,4 @@ if st.button("🚀 إرسال الأمر المباشر إلى جفري"):
                     "model": "llama3-8b-8192",
                     "messages": [
                         {"role": "system", "content": system_instruction},
+                    ]
