@@ -25,7 +25,7 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 Jeffrey المساعد الذكي</div>', unsafe_allow_html=True)    
 st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد ومرشد جامعي لأقسام الحاسب وبناء القدرات التقنية</div>', unsafe_allow_html=True)
 
-# وضع مفتاح Google Gemini الذي أرسلته هنا
+# ضع مفتاح Google Gemini الخاص بك هنا
 GEMINI_API_KEY = "AQ.Ab8RN6JIBvFYf7_fkPPRn0epodE844jqFVWvNn5TWbrlgX_Cww"
 
 if "all_extracted_text" not in st.session_state:
@@ -52,7 +52,7 @@ with tab1:
         if os.path.exists(video_path_1):
             st.video(video_path_1)
         else:
-            st.warning(f"⚠️ تأكد من رفع الفيديو الأول باسمه المطابق: '{video_path_1}' على GitHub")
+            st.warning("⚠️ تأكد من رفع الفيديو الأول على GitHub")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_vid2:
@@ -64,7 +64,7 @@ with tab1:
         if os.path.exists(video_path_2):
             st.video(video_path_2)
         else:
-            st.warning(f"⚠️ تأكد من رفع الفيديو الثاني باسمه المطابق: '{video_path_2}' على GitHub")
+            st.warning("⚠️ تأكد من رفع الفيديو الثاني على GitHub")
         st.markdown('</div>', unsafe_allow_html=True)
 
 with tab2:
@@ -139,7 +139,7 @@ with tab3:
 
     if uploaded_files:
         if len(uploaded_files) > 15:
-            st.error("⚠️ تنبيه: تجاوزت الحد الأقصى المسموح به! يرجى رفع 15 ملفاً أو أقل فقط.")
+            st.error("⚠️ تنبيه: تجاوزت الحد الأقصى المسموح به!")
             st.session_state.all_extracted_text = ""
         else:
             st.success("تم رفع الملفات بنجاح! جاري معالجة واستخراج النصوص...")
@@ -175,7 +175,7 @@ with tab3:
         elif not clean_command:
             st.warning("⚠️ صندوق الأوامر فارغ، يرجى كتابة التوجيه المطلوب أولاً.")
         elif not clean_command.startswith("جفري"):
-            st.error("⛔ جفري يرفض الاستجابة! التنبيه الصارم ينص على ضرورة مناداته بـ 'جفري' أول جملة الأمر المباشر.")
+            st.error("⛔ جفري يرفض الاستجابة! التنبيه الصارم ينص على ضرورة مناداته بـ 'جفري'.")
         else:
             with st.spinner("جاري التواصل مع الخادم وتحليل المواد الدراسية... برجاء الانتظار"):
                 try:
@@ -202,4 +202,10 @@ with tab3:
                         answer = res_json["candidates"][0]["content"]["parts"][0]["text"]
                         st.session_state.jef_response = answer
                     else:
-                        st.error(
+                        st.error(f"⚠️ حدث خطأ في الاتصال (رمز الاستجابة: {response.status_code})")
+                except Exception as e:
+                    st.error("⚠️ حدث خطأ غير متوقع أثناء المعالجة.")
+
+    if st.session_state.jef_response:
+        st.markdown("### 💬 إجابة وتوجيهات جفري:")
+        st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
