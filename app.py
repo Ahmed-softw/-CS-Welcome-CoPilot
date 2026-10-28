@@ -24,8 +24,7 @@ st.markdown('<div class="main-title">💻 المساعد الرقمي للطلا
 st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتمتة المحاضرة الأولى بالجامعة</div>', unsafe_allow_html=True)
 
 # 2. تم حقن رمز الـ API الجديد الفعال الخاص بك مباشرة في الكود ليعمل بلمح البصر
-API_KEY = "AQ.Ab8RN6LWX3rmt83vk8dWuAoHrJqKTcRhr8pMZw0_dBY6UIPo9A"
-
+API_KEY = "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"
 @st.cache_resource
 def init_ai_client(api_key):
     try:
