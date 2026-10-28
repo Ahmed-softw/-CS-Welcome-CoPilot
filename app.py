@@ -25,8 +25,11 @@ st.markdown("""
 st.markdown('<div class="main-title">💻 Jeffrey المساعد الذكي</div>', unsafe_allow_html=True)    
 st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد ومرشد جامعي لأقسام الحاسب وبناء القدرات التقنية</div>', unsafe_allow_html=True)
 
-# ضع مفتاح Google Gemini الخاص بك هنا
-GEMINI_API_KEY = "AQ.Ab8RN6JIBvFYf7_fkPPRn0epodE844jqFVWvNn5TWbrlgX_Cww"
+# جلب مفتاح Cohere بطريقة آمنة من إعدادات الـ Secrets السحابية
+try:
+    COHERE_API_KEY = st.secrets["COHERE_API_KEY"]
+except Exception:
+    COHERE_API_KEY = ""
 
 if "all_extracted_text" not in st.session_state:
     st.session_state.all_extracted_text = ""
@@ -170,7 +173,9 @@ with tab3:
     if st.button("🚀 إرسال الأمر المباشر إلى جفري"):
         clean_command = user_command.strip()
         
-        if not st.session_state.all_extracted_text:
+        if not COHERE_API_KEY:
+            st.error("⚠️ مفتاح الـ API غير معرف في إعدادات Secrets الخاصة بـ Streamlit Cloud.")
+        elif not st.session_state.all_extracted_text:
             st.warning("⚠️ يرجى رفع ملفات PDF أولاً ليتمكن جفري من قراءتها وتحليلها.")
         elif not clean_command:
             st.warning("⚠️ صندوق الأوامر فارغ، يرجى كتابة التوجيه المطلوب أولاً.")
@@ -179,33 +184,16 @@ with tab3:
         else:
             with st.spinner("جاري التواصل مع الخادم وتحليل المواد الدراسية... برجاء الانتظار"):
                 try:
-                    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={GEMINI_API_KEY.strip()}"
-                    headers = {"Content-Type": "application/json"}
+                    url = "https://api.cohere.ai/v1/chat"
+                    headers = {
+                        "Authorization": f"Bearer {COHERE_API_KEY.strip()}",
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    }
                     
                     system_prompt = (
                         "أنت مساعد أكاديمي ذكي جداً وخبير ومتخصص في علوم الحاسب وهندسة البرمجيات، واسمك الشخصي هو 'جفري'.\n"
                         "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بناءً على نصوص الـ PDF المرفقة.\n"
                     )
                     
-                    full_prompt = f"{system_prompt}\nمحتوى الملفات الدراسية:\n{st.session_state.all_extracted_text}\n\nطلب الطالب:\n{clean_command}"
-                    
-                    payload = {
-                        "contents": [{
-                            "parts": [{"text": full_prompt}]
-                        }]
-                    }
-                    
-                    response = requests.post(url, headers=headers, json=payload)
-                    
-                    if response.status_code == 200:
-                        res_json = response.json()
-                        answer = res_json["candidates"][0]["content"]["parts"][0]["text"]
-                        st.session_state.jef_response = answer
-                    else:
-                        st.error(f"⚠️ حدث خطأ في الاتصال (رمز الاستجابة: {response.status_code})")
-                except Exception as e:
-                    st.error("⚠️ حدث خطأ غير متوقع أثناء المعالجة.")
-
-    if st.session_state.jef_response:
-        st.markdown("### 💬 إجابة وتوجيهات جفري:")
-        st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
+                    full_prompt = f"محتوى الملفات الدرا
