@@ -24,6 +24,7 @@ st.markdown('<div class="sub-title">منصة الإرشاد الذكي وأتم�
 
 # 2. ضع مفتاحك المجاني المستخرج من موقع Groq هنا بدلاً من النص المؤقت
 GROQ_API_KEY = "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"
+GROQ_URL = "https://groq.com"
 
 if "quiz_data" not in st.session_state:
     st.session_state.quiz_data = None
@@ -70,6 +71,7 @@ with tab_roadmap:
 with tab_syllabus:
     st.subheader("📚 pdf ارفع ملفك وخلني اللخصه لك")
     uploaded_files = st.file_uploader("ارفع ملفات الـ PDF الخاصة بالمواد الدراسية هنا", type=["pdf"], accept_multiple_files=True)
+    
     if uploaded_files:
         st.success(f"🔒 تم رفع {len(uploaded_files)} ملفات بنجاح وجاري إعداد معالج البث الفوري!")
         all_text = ""
@@ -78,32 +80,34 @@ with tab_syllabus:
                 pdf_reader = pypdf.PdfReader(uploaded_file)
                 for page in pdf_reader.pages:
                     text = page.extract_text()
-                    if text: all_text += text + "\n"
-            except: pass
+                    if text: 
+                        all_text += text + "\n"
+            except Exception as e:
+                pass
         st.session_state.merged_text = all_text[:15000]
 
-        if st.session_state.merged_text and st.button("📝 استخراج ملخص فوري شامل"):
-            if GROQ_API_KEY == "ضع_مفتاح_GROQ_الخاص_بك_هنا" or GROQ_API_KEY == "":
-                st.error("⚠️ الرجاء وضع مفتاح Groq API Key الصحيح داخل الكود في السطر رقم 25.")
+    if st.session_state.merged_text:
+        if st.button("📝 استخراج ملخص فوري شامل"):
+            if GROQ_API_KEY in ["ضع_مفتاح_GROQ_الخاص_بك_هنا", ""]:
+                st.error("⚠️ الرجاء وضع مفتاح Groq API Key الصحيح داخل الكود.")
             else:
                 with st.spinner("جاري التلخيص الفوري الشامل عبر خوادم Groq الخارقة..."):
                     try:
-                        url = "https://groq.com"
                         headers = {"Authorization": f"Bearer {GROQ_API_KEY.strip()}", "Content-Type": "application/json"}
                         payload = {
                             "model": "llama3-8b-8192",
                             "messages": [{"role": "user", "content": f"قم بتلخيص المحتوى التالي تلخيصاً أكاديمياً احترافياً شاملاً على شكل نقاط وعناوين رئيسية باللغة العربية واضحة ومباشرة:\n\n{st.session_state.merged_text}"}]
                         }
-                        res = requests.post(url, json=payload, headers=headers)
-                        if res.status_code != 200:
-                            headers = {"api-key": GROQ_API_KEY.strip(), "Content-Type": "application/json"}
-                            res = requests.post(url, json=payload, headers=headers)
+                        res = requests.post(GROQ_URL, json=payload, headers=headers)
                         
-                        result_json = res.json()
-                        st.markdown("### 📌 التلخيص الأكاديمي الشامل:")
-                        st.info(result_json['choices']['message']['content'])
-                    except:
-                        st.error("حدث خطأ في الاتصال بسيرفر الذكاء الاصطناعي، يرجى المحاولة مجدداً.")
+                        if res.status_code == 200:
+                            result_json = res.json()
+                            st.markdown("### 📌 التلخيص الأكاديمي الشامل:")
+                            st.info(result_json['choices'][0]['message']['content'])
+                        else:
+                            st.error(f"خطأ في السيرفر: {res.status_code} - {res.text}")
+                    except Exception as e:
+                        st.error(f"حدث خطأ في الاتصال بسيرفر الذكاء الاصطناعي: {str(e)}")
 
 # ==================== التبويب الرابع ====================
 with tab_quiz:
@@ -114,38 +118,34 @@ with tab_quiz:
         col_type, col_diff, col_num = st.columns(3)
         with col_type: quiz_type = st.text_input("اكتب نوع الأسئلة المطلوب بيدك:", value="خيارات متعددة تفصيلية")
         with col_diff: quiz_difficulty = st.selectbox("مستوى الصعوبة المتوقع:", ["سهل", "متوسط", "صعب"])
-        with col_num: quiz_count = st.slider("عدد الأسئلة المطلوبة:", min_value=1, max_value=100, value=3)
+        with col_num: quiz_count = st.slider("عدد الأسئلة المطلوبة:", min_value=1, max_value=20, value=3)
 
         if st.button("🎲 صياغة الاختبار التفاعلي المخصص"):
-            if GROQ_API_KEY == "ضع_مفتاح_GROQ_الخاص_بك_هنا" or GROQ_API_KEY == "":
-                st.error("⚠️ الرجاء وضع مفتاح Groq API Key الصحيح داخل الكود في السطر رقم 25.")
+            if GROQ_API_KEY in ["ضع_مفتاح_GROQ_الخاص_بك_هنا", ""]:
+                st.error("⚠️ الرجاء وضع مفتاح Groq API Key الصحيح داخل الكود.")
             else:
                 with st.spinner("جاري صياغة بنك الأسئلة بالمعايير المطلوبة..."):
                     try:
-                        url = "https://groq.com"
                         headers = {"Authorization": f"Bearer {GROQ_API_KEY.strip()}", "Content-Type": "application/json"}
-                        prompt = f"قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وصعوبة {quiz_difficulty} بناءً على النص التالي. يجب أن تكون الاستجابة بصيغة JSON ككائن يحتوي على مصفوفة اسمها 'questions' وتتبع الهيكل التالي تماماً:\n {{\n\"questions\": [\n{{\"question\": \"السؤال\", \"options\": [\"أ\", \"ب\", \"ج\", \"د\"], \"answer\": \"الإجابة الصحيحة\"}}\n]\n}}\n\nالمحتوى:\n{st.session_state.merged_text}"
+                        prompt = f"""قم بتوليد عدد {quiz_count} أسئلة من نوع {quiz_type} وبمستوى صعوبة {quiz_difficulty} بناءً على النص التالي. 
+                        اكتب الأسئلة والخيارات والحلول باللغة العربية بشكل واضح ومباشر:
+                        
+                        {st.session_state.merged_text}"""
+                        
                         payload = {
                             "model": "llama3-8b-8192",
-                            "messages": [{"role": "user", "content": prompt}],
-                            "response_format": {"type": "json_object"}
+                            "messages": [{"role": "user", "content": prompt}]
                         }
-                        res = requests.post(url, json=payload, headers=headers)
-                        if res.status_code != 200:
-                            headers = {"api-key": GROQ_API_KEY.strip(), "Content-Type": "application/json"}
-                            res = requests.post(url, json=payload, headers=headers)
-                            
-                        data = res.json()
-                        if "choices" in data:
-                            content_text = data['choices']['message']['content']
-                            parsed_data = json.loads(content_text)
-                            if "questions" in parsed_data:
-                                st.session_state.quiz_data = parsed_data["questions"]
-                            elif isinstance(parsed_data, list):
-                                st.session_state.quiz_data = parsed_data
-                            else:
-                                st.session_state.quiz_data = list(parsed_data.values())
-                        st.session_state.user_answers = {}
-                    except:
-                        st.error("حدث خطأ في معالجة بنك الأسئلة، يرجى إعادة الضغط على زر الصياغة.")
-
+                        res = requests.post(GROQ_URL, json=payload, headers=headers)
+                        
+                        if res.status_code == 200:
+                            result_json = res.json()
+                            st.session_state.quiz_data = result_json['choices'][0]['message']['content']
+                        else:
+                            st.error(f"خطأ في السيرفر: {res.status_code}")
+                    except Exception as e:
+                        st.error(f"حدث خطأ أثناء الاتصال: {str(e)}")
+                        
+        if st.session_state.quiz_data:
+            st.markdown("### 📝 الاختبار التفاعلي المولد:")
+            st.write(st.session_state.quiz_data)
