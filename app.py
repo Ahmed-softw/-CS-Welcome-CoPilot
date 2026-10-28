@@ -7,7 +7,7 @@ import requests
 st.set_page_config(page_title="CS Academic Assistant", page_icon="💻", layout="wide")
 
 st.markdown("""
-  <style>
+    <style>
     .main-title { font-size: 34px; font-weight: bold; color: #38BDF8; text-align: center; margin-bottom: 5px; }
     .sub-title { font-size: 18px; color: #475569; text-align: center; margin-bottom: 25px; }
     .stButton>button { width: 100%; background-color: #0284C7; color: white; border-radius: 8px; font-weight: bold; height: 45px; }
@@ -27,7 +27,7 @@ st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد 
 
 # 2. إعدادات مفاتيح ربط سيرفر الـ AI لـ Groq
 GROQ_API_KEY = "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"
-GROQ_URL = "https://groq.com"
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # تهيئة متغيرات الذاكرة التخزينية داخل الجلسة (Session State)
 if "all_extracted_text" not in st.session_state:
@@ -38,7 +38,7 @@ if "jef_response" not in st.session_state:
 # عرض طريقة الاستخدام والتنبيه الخاص باسم المساعد
 st.markdown("""
 <div class="info-box">
-    🤖 <b>مرحباً بك! أنا جفري مساعدك الذكي:</b> لمساعدتك، يرجى رفع ملفات الـ PDF الدراسية (بحد أقصى 15 ملفاً)، 
+    🤖 <b>مرحباً بك! أنا جفري مساعدك الذكي:</b> لمساعدتك، يرجى رفع ملفات الـ PDF الدراسية (بحد أقصى 15 ملفاً), 
     ثم وجه لي الأمر في الصندوق السفلي. <br><b>تنبيه صارم:</b> أنا لا أستجيب للأوامر إلا إذا بدأت بـ مناداتي باسمي أولاً! 
     <br><i>مثال صحيح: "جفري لخص لي هذه المحاضرة واصنع منها أسئلة صح وخطأ"</i>
 </div>
@@ -189,9 +189,35 @@ if st.button("🚀 إرسال الأمر المباشر إلى جفري"):
                     "Content-Type": "application/json"
                 }
                 
-                system_instruction = "أنت مساعد أكاديمي ذكي جداً وخبير ومتخصص في علوم الحاسب وهندسة البرمجيات، واسمك الشخصي هو 'جفري'.\nمهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بمرونة فائقة بناءً على نصوص الـ PDF المرفقة مع الالتزام التام بالقواعد التالية:\n1. يمكنك دمج عدة طلبات معاً (ملخص، شرح جزئية، صياغة أسئلة متنوعة) في رد واحد منسق أكاديمياً بعناوين واضحة.\n2. إذا تضمن طلب الطالب توليد أسئلة (خيارات، صح وخطأ، أو مقالي)، فيجب وبشكل صارم ألا يتجاوز إجمالي عدد الأسئلة المصنوعة 60 سؤالاً كحد أقصى مهما كانت صيغة الطلب.\n3. لغة الرد يجب أن تكون العربية الفصحى الواضحة والمنظمة للمذاكرة مباشرة."
+                system_instruction = (
+                    "أنت مساعد أكاديمي ذكي جداً وخبير ومتخصص في علوم الحاسب وهندسة البرمجيات، واسمك الشخصي هو 'جفري'.\n"
+                    "مهمتك تنفيذ كافة الأوامر الموجهة لك من الطالب بمرونة فائقة بناءً على نصوص الـ PDF المرفقة مع الالتزام التام بالقواعد التالية:\n"
+                    "1. يمكنك دمج عدة طلبات معاً (ملخص، شرح جزئية، صياغة أسئلة متنوعة) في رد واحد منسق أكاديمياً بعناوين واضحة.\n"
+                    "2. إذا تضمن طلب الطالب توليد أسئلة (خيارات، صح وخطأ، أو مقالي)، فيجب وبشكل صارم ألا يتجاوز إجمالي عدد الأسئلة المصنوعة 60 سؤالاً كحد أقصى مهما كانت صيغة الطلب.\n"
+                    "3. لغة الرد يجب أن تكون العربية الفصحى الواضحة والمنظمة للمذاكرة مباشرة."
+                )
                 
                 payload = {
                     "model": "llama3-8b-8192",
                     "messages": [
                         {"role": "system", "content": system_instruction},
+                        {"role": "user", "content": f"محتوى الملفات الدراسية:\n{st.session_state.all_extracted_text}\n\nطلب الطالب:\n{clean_command}"}
+                    ],
+                    "temperature": 0.5,
+                    "max_tokens": 2048
+                }
+                
+                response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+                
+                if response.status_code == 200:
+                    res_json = response.json()
+                    answer = res_json["choices"][0]["message"]["content"]
+                    st.session_state.jef_response = answer
+                else:
+                    st.error(f"⚠️ حدث خطأ في الاتصال بخادم الذكاء الاصطناعي (رمز الاستجابة: {response.status_code}): {response.text}")
+            except Exception as e:
+                st.error(f"⚠️ حدث خطأ غير متوقع: {e}")
+
+if st.session_state.jef_response:
+    st.markdown("### 💬 إجابة وتوجيهات جفري:")
+    st.markdown(f'<div class="response-box">{st.session_state.jef_response}</div>', unsafe_allow_html=True)
