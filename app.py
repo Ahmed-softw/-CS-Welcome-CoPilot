@@ -26,7 +26,7 @@ st.markdown('<div class="main-title">💻 Jeffrey المساعد الذكي</div
 st.markdown('<div class="sub-title">مساعد مرئي وملخص للمواد ومرشد جامعي لأقسام الحاسب وبناء القدرات التقنية</div>', unsafe_allow_html=True)
 
 # 2. إعدادات مفاتيح ربط سيرفر الـ AI لـ Groq
-GROQ_API_KEY = "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"
+GROQ_API_KEY = "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"
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 # تهيئة متغيرات الذاكرة التخزينية داخل الجلسة (Session State)
